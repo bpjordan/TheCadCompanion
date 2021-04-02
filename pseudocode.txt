@@ -3,15 +3,18 @@ Cube(Arduino Nano) -> theCube.ino
 	- transmits through serial output to transceiver
 
 Base Station (Arduino Uno) -> baseStation.ino
-	- reads serial input from transceiver
-	- parses into rotation data
-	- mutates into solidworks translation matrix
-	- mutates matrix into array
-	- outputs array to USB
+	- On new position data from cube
+		- keep tally of position changes from old position
+		- update old position to be current position
+	- When position data recieved from Solidworks
+		- apply net changes to position data and return to solidworks
+		- reset net change matrix
 
 Solidworks Addin
 	- On solidworks init
 		- Prompts user for COM port to use
-	- on new serial line
-		- parses serial line into translation matrix
-		- does C# trickery to make solidworks do the translation
+		- Prompts user for update rate
+	- Serial poll (execute based on update rate)
+		- send current position data as serial string
+		- wait for reply of new translation matrix
+		- do C# trickery to make solidworks do the translation
