@@ -142,5 +142,13 @@ void runSensors(BLEDevice peripheral){
 	//Now for the good part
 	while (peripheral.connected()) {
 		//Do the sensor
+		if (IMU.gyroscopeAvailable()) {
+			float x, y, z;
+			IMU.readGyroscope(x, y, z);
+
+			gyroX.writeValue(x);
+			gyroY.writeValue(y);
+			gyroz.writeValue(z);
+		}
 	}
 }
