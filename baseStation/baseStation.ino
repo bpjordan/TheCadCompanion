@@ -39,7 +39,7 @@ void setup() {
 	BLE.advertise();
 
 	#ifdef DEBUG
-	Serial.println("BLE Advertising");
+	Serial.println("BLE Advertising...");
 	#endif
 
 }
@@ -48,14 +48,10 @@ void loop() {
 	//Listen to see if the cube is connected
 	BLEDevice cube = BLE.central();
 
-	#ifdef DEBUG
-	Serial.print("\rWaiting for Cube...");
-	#endif
-
 	//If the cube is connected:
 	if (cube){
 		#ifdef DEBUG
-		Serial.println("Cube Connected");
+		Serial.println("Cube Connected!");
 		#endif
 		
 		//While the cube is connected
