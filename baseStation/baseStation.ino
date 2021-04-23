@@ -45,4 +45,33 @@ void setup() {
 }
 
 void loop() {
+	//Listen to see if the cube is connected
+	BLEDevice cube = BLE.central();
+
+	#ifdef DEBUG
+	Serial.print("\rWaiting for Cube...");
+	#endif
+
+	//If the cube is connected:
+	if (cube){
+		#ifdef DEBUG
+		Serial.println("Cube Connected");
+		#endif
+		
+		//While the cube is connected
+		while(cube.connected()) {
+			if (gyroX.written() || gyroY.written() || gyroZ.written()) {
+
+				#ifdef DEBUG
+				Serial.print(gyroX.value(), 0);
+				Serial.print('\t');
+				Serial.print(gyroY.value(), 0);
+				Serial.print('\t');
+				Serial.print(gyroZ.value(), 0);
+				Serial.print('\r');
+				#endif
+			}
+		}
+	}
+
 }
