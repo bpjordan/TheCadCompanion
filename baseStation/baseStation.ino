@@ -52,6 +52,7 @@ void loop() {
 	if (cube){
 		#ifdef DEBUG
 		Serial.println("Cube Connected!");
+		Serial.println("X\tY\tZ");
 		#endif
 		
 		//While the cube is connected
@@ -60,11 +61,11 @@ void loop() {
 
 				#ifdef DEBUG
 				Serial.print(gyroX.value(), 0);
-				Serial.print('\t');
+				Serial.print("   \t");
 				Serial.print(gyroY.value(), 0);
-				Serial.print('\t');
+				Serial.print("   \t");
 				Serial.print(gyroZ.value(), 0);
-				Serial.print('\r');
+				Serial.print("   \r");
 				#endif
 			}
 		}
