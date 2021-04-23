@@ -2,12 +2,18 @@
 #include <Arduino_LSM9DS1.h>
 
 //#define DEBUG
-#define BLEDEBUG
+//#define BLEDEBUG
 
 void setup() {
 
-	#ifdef DEBUG
 	Serial.begin(9600);
+
+	#ifdef DEBUG
+	while(!Serial);
+	#endif
+
+	#ifdef BLEDEBUG
+	while(!Serial);
 	#endif
 
 	//Initialize Sensors
@@ -26,8 +32,16 @@ void setup() {
 	//Initialize BLE
 	BLE.begin();
 
+	#ifdef BLEDEBUG
+	Serial.println("BLE Initialized");
+	#endif
+
 	//Scan for the base station
-	BLE.scanForUuid("c9930826-a3ed-11eb-bcbc-0242ac130002")
+	BLE.scanForUuid("c9930826-a3ed-11eb-bcbc-0242ac130002");
+
+	#ifdef BLEDEBUG
+	Serial.println("Scanning...");
+	#endif
 
 	#endif
 }
@@ -54,19 +68,22 @@ void loop(){
 
 		if (baseStation.localName() != "BaseStation")
 			return;
+
+		//We found the right peripheral, so stop scanning
+		BLE.stopScan();
+
+		//And do the thing
+		runSensors(baseStation);
 		
+		//When we get out of that function, we've lost BLE
+		//So find it again
+		BLE.scanForUuid("c9930826-a3ed-11eb-bcbc-0242ac130002");
+
+		#ifdef BLEDEBUG
+		Serial.println("Scanning...");
+		#endif
 	}
-
-	//We found the right peripheral, so stop scanning
-	BLE.stopScan();
-
-	//And do the thing
-	runSensors(baseStation);
 	
-	//When we get out of that function, we've lost BLE
-	//So find it again
-	BLE.scanForUuid("c9930826-a3ed-11eb-bcbc-0242ac130002")
-
 	#endif
 
 }
@@ -93,18 +110,21 @@ void printSensors() {
 void runSensors(BLEDevice peripheral){
 	//Connect to the base station
 	#ifdef BLEDEBUG
-	Serial.println("Connecting...")
+	Serial.println("Connecting...");
 	#endif
 
-	if (peripheral.connect()){
-		#ifdef BLEDEBUG
-		Serial.println("Connected");
-		#endif
-	} else {
+	if (!peripheral.connect()){
 		#ifdef BLEDEBUG
 		Serial.println("Connection failed!");
+		#endif
 		return;
 	}
+	
+	#ifdef BLEDEBUG
+	else {
+		Serial.println("Connected");
+	}
+	#endif
 	
 	//Discover peripheral settings
 	#ifdef BLEDEBUG
@@ -132,7 +152,7 @@ void runSensors(BLEDevice peripheral){
 		Serial.println("Peripheral does not have one of the sensor characteristics");
 		#endif
 		return;
-	} else if (!(gyroX.canWrite() && gryoY.canWrite() && gyroZ.canWrite())) {
+	} else if (!(gyroX.canWrite() && gyroY.canWrite() && gyroZ.canWrite())) {
 		#ifdef BLEDEBUG
 		Serial.println("One of the sensor characteristics is not writable");
 		#endif
@@ -146,9 +166,9 @@ void runSensors(BLEDevice peripheral){
 			float x, y, z;
 			IMU.readGyroscope(x, y, z);
 
-			gyroX.writeValue(x);
-			gyroY.writeValue(y);
-			gyroz.writeValue(z);
+			gyroX.writeValue(long(x));
+			gyroY.writeValue(long(y));
+			gyroZ.writeValue(long(z));
 		}
 	}
 }

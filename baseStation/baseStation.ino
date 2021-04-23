@@ -4,9 +4,9 @@
 
 BLEService sensorService("c9930826-a3ed-11eb-bcbc-0242ac130002");
 
-BLEFloatCharacteristic gyroX("3366f988-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
-BLEFloatCharacteristic gyroY("3367000e-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
-BLEFloatCharacteristic gyroZ("336702e8-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
+BLELongCharacteristic gyroX("3366f988-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
+BLELongCharacteristic gyroY("3367000e-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
+BLELongCharacteristic gyroZ("336702e8-a3ee-11eb-bcbc-0242ac130002", BLERead | BLEWrite);
 
 void setup() {
 
@@ -27,8 +27,15 @@ void setup() {
 	BLE.setLocalName("BaseStation");
 	BLE.setAdvertisedService(sensorService);
 
+	//Add the characteristics
+	sensorService.addCharacteristic(gyroX);
+	sensorService.addCharacteristic(gyroY);
+	sensorService.addCharacteristic(gyroZ);
+
 	//Add the service
 	BLE.addService(sensorService);
+
+
 
 	//Initialize all of the sensor values
 	gyroX.writeValue(0);
@@ -50,25 +57,37 @@ void loop() {
 
 	//If the cube is connected:
 	if (cube){
+		readCube(cube);
 		#ifdef DEBUG
-		Serial.println("Cube Connected!");
-		Serial.println("X\tY\tZ");
+		Serial.println("\rConnection Lost, waiting to reconnect");
 		#endif
-		
-		//While the cube is connected
-		while(cube.connected()) {
-			if (gyroX.written() || gyroY.written() || gyroZ.written()) {
-
-				#ifdef DEBUG
-				Serial.print(gyroX.value(), 0);
-				Serial.print("   \t");
-				Serial.print(gyroY.value(), 0);
-				Serial.print("   \t");
-				Serial.print(gyroZ.value(), 0);
-				Serial.print("   \r");
-				#endif
-			}
-		}
 	}
 
+}
+
+void readCube(BLEDevice cube) {
+	#ifdef DEBUG
+	Serial.println("Cube Connected!");
+	Serial.println("X\tY\tZ");
+	Serial.println("====\t====\t====");
+	#endif
+	
+	//While the cube is connected
+	while(cube.connected()) {
+		if (gyroX.written() || gyroY.written() || gyroZ.written()) {
+			long x, y, z;
+			gyroX.readValue(x);
+			gyroY.readValue(y);
+			gyroZ.readValue(z);
+
+			#ifdef DEBUG
+			Serial.print(x);
+			Serial.print("   \t");
+			Serial.print(y);
+			Serial.print("   \t");
+			Serial.print(z);
+			Serial.print("   \r");
+			#endif
+		}
+	}
 }
