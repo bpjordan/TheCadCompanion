@@ -61,7 +61,7 @@ void loop(){
 	BLE.stopScan();
 
 	//And do the thing
-	runSensors();
+	runSensors(baseStation);
 	
 	//When we get out of that function, we've lost BLE
 	//So find it again
@@ -90,6 +90,57 @@ void printSensors() {
 #endif
 
 
-void runSensors(){
+void runSensors(BLEDevice peripheral){
+	//Connect to the base station
+	#ifdef BLEDEBUG
+	Serial.println("Connecting...")
+	#endif
+
+	if (peripheral.connect()){
+		#ifdef BLEDEBUG
+		Serial.println("Connected");
+		#endif
+	} else {
+		#ifdef BLEDEBUG
+		Serial.println("Connection failed!");
+		return;
+	}
 	
+	//Discover peripheral settings
+	#ifdef BLEDEBUG
+	Serial.println("Discovering attributes ...");
+	#endif
+	if (peripheral.discoverAttributes()) {
+	#ifdef BLEDEBUG
+		Serial.println("Attributes discovered");
+	#endif
+	} else {
+	#ifdef BLEDEBUG
+		Serial.println("Attribute discovery failed!");
+	#endif
+		peripheral.disconnect();
+		return;
+	}
+
+	// Retrieve the characteristics we need
+	BLECharacteristic gyroX = peripheral.characteristic("3366f988-a3ee-11eb-bcbc-0242ac130002");
+	BLECharacteristic gyroY = peripheral.characteristic("3367000e-a3ee-11eb-bcbc-0242ac130002");
+	BLECharacteristic gyroZ = peripheral.characteristic("336702e8-a3ee-11eb-bcbc-0242ac130002");
+
+	if (!(gyroX && gyroY && gyroZ)){
+		#ifdef BLEDEBUG
+		Serial.println("Peripheral does not have one of the sensor characteristics");
+		#endif
+		return;
+	} else if (!(gyroX.canWrite() && gryoY.canWrite() && gyroZ.canWrite())) {
+		#ifdef BLEDEBUG
+		Serial.println("One of the sensor characteristics is not writable");
+		#endif
+		return;
+	}
+
+	//Now for the good part
+	while (peripheral.connected()) {
+		//Do the sensor
+	}
 }
