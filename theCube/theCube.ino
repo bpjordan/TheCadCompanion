@@ -2,17 +2,13 @@
 #include <Arduino_LSM9DS1.h>
 
 //#define DEBUG
-//#define BLEDEBUG
+#define BLEDEBUG
 
 void setup() {
 
 	Serial.begin(9600);
 
 	#ifdef DEBUG
-	while(!Serial);
-	#endif
-
-	#ifdef BLEDEBUG
 	while(!Serial);
 	#endif
 
@@ -165,6 +161,15 @@ void runSensors(BLEDevice peripheral){
 		if (IMU.gyroscopeAvailable()) {
 			float x, y, z;
 			IMU.readGyroscope(x, y, z);
+
+			#ifdef BLEDEBUG
+			Serial.print(x, 0);
+			Serial.print("   \t");
+			Serial.print(y, 0);
+			Serial.print("   \t");
+			Serial.print(y, 0);
+			Serial.print("   \r");
+			#endif
 
 			gyroX.writeValue(long(x));
 			gyroY.writeValue(long(y));

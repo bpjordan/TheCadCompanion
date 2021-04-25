@@ -86,7 +86,7 @@ void readCube(BLEDevice cube) {
 			Serial.print(y);
 			Serial.print("   \t");
 			Serial.print(z);
-			Serial.print("   \r");
+			Serial.print("   \t\r");
 			#endif
 		}
 	}
