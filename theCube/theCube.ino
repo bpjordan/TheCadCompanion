@@ -1,15 +1,15 @@
 #include <ArduinoBLE.h>
 #include <Arduino_LSM9DS1.h>
 
-//#define DEBUG
-#define BLEDEBUG
+#define DEBUG
+//#define BLEDEBUG
 
 void setup() {
 
 	Serial.begin(9600);
 
 	#ifdef DEBUG
-	while(!Serial);
+//	while(!Serial);
 	#endif
 
 	//Initialize Sensors
@@ -92,11 +92,11 @@ void printSensors() {
 		IMU.readGyroscope(x, y, z);
 
 		Serial.print(x, 0);
-		Serial.print("   \t");
+		Serial.print("\t");
 		Serial.print(y, 0);
-		Serial.print("   \t");
+		Serial.print("\t");
 		Serial.print(y, 0);
-		Serial.print("   \r");
+		Serial.print("\n");
 	}
 	delay(100);
 }
