@@ -2,6 +2,8 @@
 .vscode/
 sketch.json
 *~
+*.swp
+UnityTest/Library/
 
 
 #Premade C++ list
